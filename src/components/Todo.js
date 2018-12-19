@@ -18,8 +18,27 @@ const todo = props => {
             })
             .catch(err => {
                 console.log(err);
-            })
-    });
+            });
+        return () => {
+          console.log('clean up');
+        };
+        // no array - every render cycle - infinite loop
+        // only calls useEffect again if todoName changes
+        // use empty array [] to have same lifecycle hook effect as componentDidMount
+        // use todoName to simulate componentDidMount with componentDidUpdate + componentDidMount
+    }, [todoName]);
+
+    const mouseMoveHandler = (event) => {
+        console.log(event.clientX, event.clientY);
+
+    };
+
+    useEffect(() => {
+        document.addEventListener('mousemove', mouseMoveHandler);
+        return () => {
+            document.removeEventListener('mousemove', mouseMoveHandler);
+        }
+    }, []);
 
     const inputChangeHandler = (event) => {
         setTodoName(event.target.value);
@@ -27,7 +46,7 @@ const todo = props => {
 
     const todoAddHandler = () => {
         setTodoList(todoList.concat(todoName));
-        axios.post('https://react-hooks-e0025.firebaseio.com/todos.json', {name: todoName})
+        axios.post('https://react-hooks-e0025.firebaseio.com/todos.json', {id: Math.random(), name: todoName})
             .then(res => {
                 console.log(res);
             })
