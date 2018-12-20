@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, useRef } from 'react';
 import axios from 'axios';
 
 const todo = props => {
-    const [todoName, setTodoName] = useState('');
-
+    // const [todoName, setTodoName] = useState('');
+    const todoInputRef = useRef();
     const todoListReducer = (state, action) => {
         switch(action.type){
             case 'ADD':
@@ -44,7 +44,7 @@ const todo = props => {
         // only calls useEffect again if todoName changes
         // use empty array [] to have same lifecycle hook effect as componentDidMount
         // use todoName to simulate componentDidMount with componentDidUpdate + componentDidMount
-    }, [todoName]);
+    }, [todoInputRef]);
 
     const mouseMoveHandler = (event) => {
         console.log(event.clientX, event.clientY);
@@ -57,11 +57,14 @@ const todo = props => {
         }
     }, []);
 
-    const inputChangeHandler = (event) => {
-        setTodoName(event.target.value);
-    };
+    // const inputChangeHandler = (event) => {
+    //     setTodoName(event.target.value);
+    // };
 
     const todoAddHandler = () => {
+
+        const todoName = todoInputRef.current.value;
+
         axios.post('https://react-hooks-e0025.firebaseio.com/todos.json', {id: Math.random(), name: todoName})
             .then(res => {
                 console.log(res);
@@ -73,7 +76,7 @@ const todo = props => {
             .catch(err => {
                 console.log(err);
             });
-        setTodoName('');
+        // setTodoName('');
     };
 
     const todoRemoveHandler = todoId => {
@@ -95,8 +98,7 @@ const todo = props => {
             <input
                 type='text'
                 placeholder='Todo'
-                value={todoName}
-                onChange={inputChangeHandler}/>
+                ref={todoInputRef}/>
             <button type='button' onClick={todoAddHandler}>Add</button>
             <ul>
                 {todoList.map(todo => (
